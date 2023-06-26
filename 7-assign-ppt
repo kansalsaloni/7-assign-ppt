@@ -1,0 +1,420 @@
+QUESTION 1 =>  Given two strings s and t, *determine if they are isomorphic*.
+Two strings s and t are isomorphic if the characters in s can be replaced to get t.
+All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.
+
+SOLUTION=>
+
+#include <iostream>
+#include <unordered_map>
+
+bool isIsomorphic(std::string s, std::string t) {
+    if (s.length() != t.length()) {
+        return false; // Different lengths cannot be isomorphic
+    }
+
+    std::unordered_map<char, char> sToT; // Mapping from s to t
+    std::unordered_map<char, char> tToS; // Mapping from t to s
+
+    for (int i = 0; i < s.length(); i++) {
+        char chs = s[i];
+        char cht = t[i];
+
+        if (sToT.count(chs)) {
+            if (sToT[chs] != cht) {
+                return false; // Inconsistent mapping from s to t
+            }
+        } else {
+            sToT[chs] = cht;
+        }
+
+        if (tToS.count(cht)) {
+            if (tToS[cht] != chs) {
+                return false; // Inconsistent mapping from t to s
+            }
+        } else {
+            tToS[cht] = chs;
+        }
+    }
+
+    return true; // Mappings are consistent in both directions
+}
+
+int main() {
+    std::string s, t;
+    std::cout << "Enter the first string: ";
+    std::cin >> s;
+
+    std::cout << "Enter the second string: ";
+    std::cin >> t;
+
+    bool isomorphic = isIsomorphic(s, t);
+    std::cout << "Isomorphic: " << (isomorphic ? "true" : "false") << std::endl;
+
+    return 0;
+}
+
+
+Input: s = "egg", t = "add"
+Output: true
+
+##########################################################################################################
+QUESTION 2=>Given a string num which represents an integer, return true if num is a strobogrammatic 
+
+SOLUTION =>
+
+#include <iostream>
+#include <unordered_map>
+
+bool isStrobogrammatic(std::string num) {
+    // Define the valid strobogrammatic pairs
+    std::unordered_map<char, char> strobPairs = {
+        {'0', '0'},
+        {'1', '1'},
+        {'6', '9'},
+        {'8', '8'},
+        {'9', '6'}
+    };
+    
+    int left = 0;
+    int right = num.length() - 1;
+    
+    while (left <= right) {
+        // Check if the pair at current positions is valid
+        if (!strobPairs.count(num[left]) || strobPairs[num[left]] != num[right]) {
+            return false;
+        }
+        
+        left++;
+        right--;
+    }
+    
+    return true;
+}
+
+int main() {
+    std::string num;
+    std::cout << "Enter a number: ";
+    std::cin >> num;
+    
+    bool isStrob = isStrobogrammatic(num);
+    std::cout << num << " is " << (isStrob ? "strobogrammatic" : "not strobogrammatic") << std::endl;
+    
+    return 0;
+}
+
+
+Input:  num = "69"
+Output: true
+
+####################################################################################################################
+QUESTION 3=> Given two non-negative integers, num1 and num2 represented as string, return *the sum of* num1 *and* num2 *as a string*.
+
+You must solve the problem without using any built-in library for handling large integers (such as BigInteger). You must also not convert the inputs to integers directly.
+SOLUTION=>
+
+#include <iostream>
+#include <algorithm>
+
+std::string addStrings(std::string num1, std::string num2) {
+    std::string result;
+    int carry = 0;
+    int i = num1.length() - 1;
+    int j = num2.length() - 1;
+    
+    while (i >= 0 || j >= 0 || carry > 0) {
+        int digit1 = (i >= 0) ? num1[i] - '0' : 0;
+        int digit2 = (j >= 0) ? num2[j] - '0' : 0;
+        
+        int sum = digit1 + digit2 + carry;
+        carry = sum / 10;
+        int digit = sum % 10;
+        
+        result.push_back(digit + '0');
+        
+        i--;
+        j--;
+    }
+    
+    std::reverse(result.begin(), result.end());
+    return result;
+}
+
+int main() {
+    std::string num1, num2;
+    std::cout << "Enter the first number: ";
+    std::cin >> num1;
+    std::cout << "Enter the second number: ";
+    std::cin >> num2;
+    
+    std::string sum = addStrings(num1, num2);
+    std::cout << "Sum: " << sum << std::endl;
+    
+    return 0;
+}
+
+
+Input: num1 = "11", num2 = "123"
+Output:  "134"
+
+#######################################################################################################
+QUESTION 4=>Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+SOLUTION =>
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <algorithm>
+
+std::string reverseWords(std::string s) {
+    std::stringstream ss(s);
+    std::string word;
+    std::string result;
+    
+    while (ss >> word) {
+        std::reverse(word.begin(), word.end());
+        result += word + ' ';
+    }
+    
+    // Remove the trailing whitespace
+    if (!result.empty()) {
+        result.pop_back();
+    }
+    
+    return result;
+}
+
+int main() {
+    std::string sentence;
+    std::cout << "Enter a sentence: ";
+    std::getline(std::cin, sentence);
+    
+    std::string reversed = reverseWords(sentence);
+    std::cout << "Reversed: " << reversed << std::endl;
+    
+    return 0;
+}
+
+
+**Input: s = "Let's take LeetCode contest"
+**Output: "s'teL ekat edoCteeL tsetnoc"
+
+###########################################################################################################
+QUESTION 5=>  Given a string s and an integer k, reverse the first k characters for every 2k characters counting from the start of the string.
+
+If there are fewer than k characters left, reverse all of them. If there are less than 2k but greater than or equal to k characters, then reverse the first k characters and leave the other as original.
+SOLUTION=>
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+std::string reverseStr(std::string s, int k) {
+    int n = s.length();
+    
+    for (int i = 0; i < n; i += 2 * k) {
+        // Reverse the first k characters
+        int start = i;
+        int end = std::min(i + k, n) - 1;
+        while (start < end) {
+            std::swap(s[start], s[end]);
+            start++;
+            end--;
+        }
+    }
+    
+    return s;
+}
+
+int main() {
+    std::string s;
+    int k;
+    
+    std::cout << "Enter a string: ";
+    std::getline(std::cin, s);
+    
+    std::cout << "Enter the value of k: ";
+    std::cin >> k;
+    
+    std::string reversed = reverseStr(s, k);
+    std::cout << "Reversed string: " << reversed << std::endl;
+    
+    return 0;
+}
+
+
+**Input: s = "abcdefg", k = 2
+**Output: "bacdfeg"
+
+##################################################################################################################
+QUESTION 6=> Given two strings s and goal, return true *if and only if* s *can become* goal *after some number of **shifts** on* s.
+
+A **shift** on s consists of moving the leftmost character of s to the rightmost position.
+
+- For example, if s = "abcde", then it will be "bcdea" after one shift.
+SOLUTION=>
+
+#include <iostream>
+#include <string>
+
+bool canShiftString(const std::string& s, const std::string& goal) {
+    // Check if goal is a substring of s concatenated with itself
+    std::string concatenated = s + s;
+    return concatenated.find(goal) != std::string::npos;
+}
+
+int main() {
+    std::string s, goal;
+    
+    std::cout << "Enter string s: ";
+    std::cin >> s;
+    
+    std::cout << "Enter string goal: ";
+    std::cin >> goal;
+    
+    bool canShift = canShiftString(s, goal);
+    
+    if (canShift) {
+        std::cout << "s can be transformed into goal after some shifts." << std::endl;
+    } else {
+        std::cout << "s cannot be transformed into goal after any number of shifts." << std::endl;
+    }
+    
+    return 0;
+}
+
+
+Input: s = "abcde", goal = "cdeab"
+OUTPUT: true
+
+####################################################################################################################
+QUESTION 7=>  Given two strings s and t, return true *if they are equal when both are typed into empty text editors*. '#' means a backspace character.
+
+Note that after backspacing an empty text, the text will continue empty.
+SOLUTION=>
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+bool backspaceCompare(const std::string& s, const std::string& t) {
+    std::stack<char> stackS, stackT;
+    
+    // Process string s
+    for (char c : s) {
+        if (c != '#') {
+            stackS.push(c);
+        } else if (!stackS.empty()) {
+            stackS.pop();
+        }
+    }
+    
+    // Process string t
+    for (char c : t) {
+        if (c != '#') {
+            stackT.push(c);
+        } else if (!stackT.empty()) {
+            stackT.pop();
+        }
+    }
+    
+    // Compare the remaining characters in the stacks
+    while (!stackS.empty() && !stackT.empty()) {
+        if (stackS.top() != stackT.top()) {
+            return false;
+        }
+        stackS.pop();
+        stackT.pop();
+    }
+    
+    // Check if both stacks are empty
+    return stackS.empty() && stackT.empty();
+}
+
+int main() {
+    std::string s, t;
+    
+    std::cout << "Enter string s: ";
+    std::cin >> s;
+    
+    std::cout << "Enter string t: ";
+    std::cin >> t;
+    
+    bool areEqual = backspaceCompare(s, t);
+    
+    if (areEqual) {
+        std::cout << "s and t are equal when typed into empty text editors." << std::endl;
+    } else {
+        std::cout << "s and t are not equal when typed into empty text editors." << std::endl;
+    }
+    
+    return 0;
+}
+
+
+Input: s = "ab#c", t = "ad#c"
+Output: true
+
+###############################################################################################################
+QUESTION 8=>You are given an array coordinates, coordinates[i] = [x, y], where [x, y] represents the coordinate of a point. Check if these points make a straight line in the XY plane.
+SOLUTION=>
+
+#include <iostream>
+#include <vector>
+
+bool checkStraightLine(const std::vector<std::vector<int>>& coordinates) {
+    int n = coordinates.size();
+    
+    // Calculate the slope between the first two points
+    int x0 = coordinates[0][0];
+    int y0 = coordinates[0][1];
+    int x1 = coordinates[1][0];
+    int y1 = coordinates[1][1];
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+    
+    // Check the slope between the remaining points
+    for (int i = 2; i < n; i++) {
+        int xi = coordinates[i][0];
+        int yi = coordinates[i][1];
+        
+        // Calculate the slope between the current point and the first point
+        int dxi = xi - x0;
+        int dyi = yi - y0;
+        
+        // If the slopes are not equal, return false
+        if (dx * dyi != dxi * dy) {
+            return false;
+        }
+    }
+    
+    // All slopes are equal, so the points form a straight line
+    return true;
+}
+
+int main() {
+    int n;
+    std::cout << "Enter the number of points: ";
+    std::cin >> n;
+    
+    std::vector<std::vector<int>> coordinates(n, std::vector<int>(2));
+    
+    std::cout << "Enter the coordinates of the points:\n";
+    for (int i = 0; i < n; i++) {
+        std::cout << "Point " << i + 1 << ": ";
+        std::cin >> coordinates[i][0] >> coordinates[i][1];
+    }
+    
+    bool isStraightLine = checkStraightLine(coordinates);
+    
+    if (isStraightLine) {
+        std::cout << "The points form a straight line." << std::endl;
+    } else {
+        std::cout << "The points do not form a straight line." << std::endl;
+    }
+    
+    return 0;
+}
+
+
+Input: coordinates = [[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]]
+Output: true
